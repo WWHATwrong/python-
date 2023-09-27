@@ -1,0 +1,431 @@
+
+切换模式
+写文章
+登录/注册
+Python—Text：功能强大的文本框
+Python—Text：功能强大的文本框
+阙赞
+阙赞
+一线技术 最新资料 加群313074041共享
+8 人赞同了该文章
+一、组件简介
+Text 组件，文本框，一个非常灵活而又强大的组件，主要用于显示和处理多行文本。
+
+Text 组件用于显示文本文档，包含纯文本或格式化文本，比如使用不同字体、嵌入图片、显示链接，甚至是带 CSS 格式的 HTML 等等。
+
+Label 组件虽然可以跨多行显示，但是只能显示单一字体；而使用 Text，你可以实现各种花里胡哨的样式。
+
+二、运用实例
+1. Text 多样式文本
+我们在最前面说到，Text 组件相对 Label 组件最大的优势就是显示各种各样的样式的文本。
+
+import tkinter as tk 
+
+root = tk.Tk()
+
+text = tk.Text(root, width=20, height=5)
+text.pack(padx=10, pady=10)
+
+# 设置文本格式tag
+text.tag_config('tag_1', background='yellow', foreground='red')  # bg,fg 并不是它的缩写
+
+# insert 索引表示插入光标的当前位置，并可以设置文本格式
+text.insert('insert', '我今天想吃')  # 在光标位置插入
+text.insert('end','麻辣小龙虾', 'tag_1') # 在最后位置插入
+
+root.mainloop()
+运行程序，显示如下：
+
+
+利用tag_config()方法，我们可以自定义各式各样的文本格式，最后在insert()最后添加自定义命名的tag参数，从而就实现对指定文本使用特定格式的操作。
+
+2. Text 中插入对象
+在 Text 组件中可以插入其他对象，使用 window_create() 方法插入其他组件，使用 image_create() 方法插入图片。
+
+import tkinter as tk 
+
+root = tk.Tk()
+
+text = tk.Text(root, width=50, height=20)
+text.pack(padx=10, pady=10)
+
+# 设置文本格式tag
+text.tag_config('tag_1', background='yellow', foreground='red')  # bg,fg 并不是它的缩写
+
+# insert 索引表示插入光标的当前位置，并可以设置文本格式
+text.insert('insert', '我今天想吃')  # 在光标位置插入
+text.insert('end','麻辣小龙虾', 'tag_1') # 在最后位置插入
+text.insert('end','\n')  # 实现换行
+
+def callback():
+    print("啊~有点痛!!!")
+
+# 插入按钮    
+bt = tk.Button(text, text="轻轻点", command=callback)
+text.window_create('insert', window=bt)
+
+text.insert('end','\n')  # 实现换行
+
+# 插入图片
+photo = tk.PhotoImage(file='头像2.png')
+text.image_create('insert', image=photo)
+
+root.mainloop()
+
+三、参数方法
+1. 参数汇总
+归纳总结Text组件中一些常用的参数以及用法。
+
+
+2. 方法汇总
+bbox(index)
+返回给定索引指定的字符的边界框
+返回值是一个 4 元组：(x, y, width, height)
+如果该字符是不可见的，那么返回 None
+注意：只有当 Text 组件被更新的时候该方法才有效，可以使用 update_idletasks() 方法先更新 Text 组件
+
+
+compare(index1, op, index2)
+返回对比 index1 和 index2 指定的两个字符的结果
+op 是操作符：’<’, ‘<=’, ‘==’, ‘>=’, ‘>’ 或 ‘!=’（不支持 Python 的 ‘<>’ 操作符）
+返回布尔类型的值表示对比的结果
+
+
+debug(boolean=None)
+开启或关闭 Debug 状态
+
+
+delete(start, end=None)
+删除给定范围的文本或嵌入对象
+如果在给定范围内有任何 Marks 标记的位置，则将 Marks 移动到 start 参数开始的位置
+
+
+dlineinfo(index)
+返回给定索引指定的字符所在行的边界框
+返回值是一个 5 元组：(x, y, width, height, offset)，offset 表示从该行的顶端到基线的偏移
+如果该行不可见，则返回 None
+注意：只有当 Text 组件被更新的时候该方法才有效，可以使用 update_idletasks() 方法先更新 Text 组件
+
+
+
+
+dump(index1, index2=None, command=None, **kw)
+返回 index1 和 index2 之间的内容
+返回的值是一个由 3 元组（关键词，值，索引）组成的列表，关键词参数的顺序为：all, image, mark, tag, text, window
+默认关键词是 ‘all’，表示全部关键词均为选中状态
+如果需要筛选个别关键词，可以用 dump(index1, index2, image=True, text=True) 这样的形式调用
+如果指定了 command 函数，那么会为列表中的每一个三元组作为参数调用一次该函数（这种情况下，dump() 不返回值）
+
+
+edit_modified(arg=None)
+该方法用于查询和设置 modified 标志（该标标志用于追踪 Text 组件的内容是否发生变化）
+如果不指定 arg 参数，那么返回 modified 标志是否被设置
+你可以传递显式地使用 True 或 False 作为参数来设置或清除 modified 标志
+任何代码或用户的插入或删除文本操作，“撤销”或“恢复”操作，都会是的 modified 标志被设置
+
+
+edit_redo(self)
+“恢复”上一次的“撤销”操作
+如果 undo 选项为 False，该方法无效
+详见上方用法【“撤销”和“恢复”操作】
+
+
+edit_reset()
+清空存放操作记录的栈
+
+
+edit_separator()
+插入一个“分隔符”到存放操作记录的栈中，用于表示已经完成一次完整的操作
+如果 undo 选项为 False，该方法无效
+详见上方用法【“撤销”和“恢复”操作】
+
+
+edit_undo()
+撤销最近一次操作
+如果 undo 选项为 False，该方法无效
+详见上方用法【“撤销”和“恢复”操作】
+
+
+get(index1, index2=None)
+返回 index1 到 index2（不包含）之间的文本
+如果 index2 参数忽略，则返回一个字符
+如果包含 image 和 window 的嵌入对象，均被忽略
+如果包含有多行文本，那么自动插入换行符（’\n’）
+
+
+image_cget(index, option)
+返回 index 参数指定的嵌入 image 对象的 option 选项的值
+如果给定的位置没有嵌入 image 对象，则抛出 TclError 异常
+
+
+image_configure(index, **options)
+修改 index 参数指定的嵌入 image 对象的一个或多个 option 选项的值
+如果给定的位置没有嵌入 image 对象，则抛出 TclError 异常
+
+
+image_create(index, cnf={}, **kw)
+在 index 参数指定的位置嵌入一个 image 对象
+该 image 对象必须是 Tkinter 的 PhotoImage 或 BitmapImage 实例
+可选选项 align：设定此图像的垂直对齐，可以是 TOP、CENTER、BOTTOM 或 BASELINE
+可选选项 image：PhotoImage 或 BitmapImage 对象
+可选选项 name：你可以为该图像实例命名，如果你忽略此选项，那么 Tkinter 会自动为其取一个独一无二的名字。
+可选选项 padx：设置水平方向上的额外间距
+可选选项 pady：设置垂直方向上的额外间距
+
+
+image_names()
+返回 Text 组件中嵌入的所有 image 对象的名字
+
+
+index(index)
+将 index 参数指定的位置以 “line.column” 的索引形式返回
+index 参数支持任何格式的索引
+
+
+insert(index, text, *tags)
+在 index 参数指定的位置插入字符串
+可选参数 tags 用于指定文本的样式
+详见上方【Tags 用法】
+
+
+mark_gravity(self, markName, direction=None)
+设置 Mark 的方向，可以是 LEFT 或 RIGHT（默认是 RIGHT，即如果在 Mark 处插入文本的话，Mark 将发生相应的移动以保持在插入文本的右侧）
+如果设置为 LEFT，那么在 Mark 处插入文本并不会移动 Mark（因为 Mark 在插入文本的左侧）
+如果忽略 direction 参数，则返回指定 Mark 的方向
+详见上方【Marks 用法】
+
+
+mark_names()
+返回 Text 组件中所有 Marks 的名字
+包括两个特殊 Mark：INSERT 和 CURRENT
+注意：END 是特殊的索引，不是 Mark
+
+
+mark_next(index)
+返回在 index 指定的位置后边的一个 Mark 的名字
+如果不存在则返回空字符串
+
+
+mark_previous(index)
+返回在 index 指定的位置前边的一个 Mark 的名字
+如果不存在则返回空字符串
+
+
+mark_set(markName, index)
+移动 Mark 到 index 参数指定的位置
+如果 markName 参数指定的 Mark 不存在，则创建一个新的 Mark
+
+
+mark_unset(*markNames)
+删除 markNames 指定的 Marks
+不能删除预定义的 INSERT 和 CURRENT
+
+
+replace(index1, index2, chars, *args)
+将 index1 到 index2 之间的内容替换为 chars 参数指定的字符串
+如果需要为替换的内容添加 Tag，可以在 args 参数指定 Tag
+详见上方【Tags 用法】
+
+
+scan_dragto(x, y)
+详见下方 scan_mark(x, y)
+
+
+scan_mark(x, y)
+使用这种方式来实现 Text 组件内容的滚动
+需要将鼠标按钮事件以及鼠标当前位置绑定到 scan_mark(x, y) 方法，然后将 事件及当前鼠标位置绑定到 scan_dragto(x, y) 方法，就可以实现 Text 组件的内容在当前位置和 scan_mark(x, y) 指定的位置 (x, y) 之间滚动
+search(pattern, index, stopindex=None, forwards=None, backwards=None, exact=None, regexp=None, nocase=None, count=None)
+从 index 开始搜索 pattern，到 stopindex 结束（不指定表示搜索到末尾）
+如果成功找到，以 “line.column” 返回第一个匹配的字符；否则返回空字符串
+forwards 参数设置为 True 表示向前（->）搜索
+backwards 参数设置为 True 表示向后（<-）搜索
+exact 参数设置为 True 表示搜索与 pattern 完全匹配的结果
+regexp 参数设置为 True，则 pattern 被解释为 Tcl 格式的正则表达式
+nocase 参数设置为 True 是忽略大小写，默认是区分大小写的搜索
+count 参数指定为一个 IntVar 的 Tkinter 变量，用于存放当找到匹配的字符个数（如果匹配结果中没有嵌入的 image 或 window 对象的话，一般该值等于 pattern 的字符个数）
+
+
+see(index)
+滚动内容，确保 index 指定的位置可见
+
+
+tag_add(tagName, index1, index2=None)
+为 index1 到 index2 之间的内容添加一个 Tag（tagName 参数指定）
+如果 index2 参数忽略，则单独为 index1 指定的内容添加 Tag
+详见上方【Tags 用法】
+
+
+tag_bind(tagName, sequence, func, add=None)
+为 Tag 绑定事件
+详见上方【Tags 用法】
+
+
+tag_cget(tagName, option)
+返回 tagName 指定的 option 选项的值
+
+
+tag_config(tagName, cnf=None, **kw)
+跟 tag_configure(tagName, cnf=None, **kw) 一样
+
+
+tag_configure(tagName, cnf=None, **kw)
+设置 tagName 的选项
+详见上方【Tags 用法】
+
+
+tag_delete(*tagNames)
+删除 tagNames 指定的 Tags
+
+
+tag_lower(tagName, belowThis=None)
+降低 Tag 的优先级
+如果 belowThis 参数不为空，则表示 tagName 需要比 belowThis 指定的 Tag 优先级更低
+详见上方【Tags 用法】
+
+
+
+tag_names(index=None)
+如果不带参数，表示返回 Text 组件中所有 Tags 的名字
+index 参数表示返回该位置上所有的 Tags 的名字
+
+
+tag_nextrange(tagName, index1, index2=None)
+在 index1 到 index2 的范围内第一个 tagName 的位置
+如果没有则返回空字符串
+
+
+tag_prevrange(tagName, index1, index2=None)
+tag_nextrange() 的反向查找，也就是查找范围是 index2 到 index1
+
+
+tag_raise(tagName, aboveThis=None)
+提高 Tag 的优先级
+如果 aboveThis 参数不为空，则表示 tagName 需要比 aboveThis 指定的 Tag 优先级更高详见上方【Tags 用法】
+
+
+tag_ranges(tagName)
+返回所有 tagName 指定的文本，并将它们的范围以列表的形式返回
+
+
+tag_remove(tagName, index1, index2=None)
+删除 index1 到 index2 之间所有的 tagName
+如果忽略 index2 参数，那么只删除 index1 指定的那个字符的 tagName（如果有的话）
+
+
+tag_unbind(tagName, sequence, funcid=None)
+解除与 tagName 绑定的事件（sequence 指定）
+
+
+window_cget(index, option)
+返回 index 参数指定的嵌入 window 对象的 option 选项的值
+如果给定的位置没有嵌入 window 对象，则抛出 TclError 异常
+
+
+window_config(index, cnf=None, **kw)
+跟 window_configure(index, cnf=None, **kw) 一样
+
+
+window_configure(index, cnf=None, **kw)
+修改 index 参数指定的嵌入 window 对象的一个或多个 option 选项的值
+如果给定的位置没有嵌入 window 对象，则抛出 TclError 异常
+
+
+window_create(index, **options)
+在 index 参数指定的位置嵌入一个 window 对象
+支持两种方式在 Text 组件中嵌入 window 对象：请看下方 create 选项和 window 选项的描述
+可选选项 align：设定此图像的垂直对齐，可以是 TOP、CENTER、BOTTOM 或 BASELINE
+可选选项 create：指定一个回调函数用于创建嵌入的 window 组件，该函数没有参数，并且必须创建 Text 的子组件并返回
+可选选项 padx：设置水平方向上的额外间距
+可选选项 pady：设置垂直方向上的额外间距
+可选选项 stretch：该选项控制当行的高度大于嵌入组件的高度时，嵌入组件是否延伸。默认值是 False，表示组件保持原形；设置为 True 表示将该组件垂直部分延伸至行的高度
+可选选项 window：指定一个已经创建好的 window 组件，该组件必须是 Text 组件的子组件
+
+
+window_names()
+返回 Text 组件中嵌入的所有 window 对象的名字
+
+
+xview(*args)
+该方法用于在水平方向上滚动 Text 组件的内容，一般通过绑定 Scollbar 组件的 command 选项来实现（具体操作参考：Scrollbar）
+如果第一个参数是 MOVETO，则第二个参数表示滚动到指定的位置：0.0 表示最左端，1.0 表示最右端
+如果第一个参数是 SCROLL，则第二个参数表示滚动的数量，第三个参数表示滚动的单位（可以是 UNITS 或 PAGES），例如：xview(SCROLL, 3, UNITS) 表示向右滚动三行
+
+
+xview_moveto(fraction)
+跟 xview(MOVETO, fraction) 一样
+xview_scroll(number, what)
+跟 xview(SCROLL, number, what) 一样
+
+
+yview(*args)
+该方法用于在垂直方向上滚动 Text 组件的内容，一般通过绑定 Scollbar 组件的 command 选项来实现（具体操作参考：Scrollbar）
+如果第一个参数是 MOVETO，则第二个参数表示滚动到指定的位置：0.0 表示最顶端，1.0 表示最底端
+如果第一个参数是 SCROLL，则第二个参数表示滚动的数量，第三个参数表示滚动的单位（可以是 UNITS 或 PAGES），例如：yview(SCROLL, 3, PAGES) 表示向下滚动三页
+yview_moveto(fraction)
+跟 yview(MOVETO, fraction) 一样
+
+
+yview_scroll(number, what)
+跟 yview(SCROLL, number, what) 一样
+赠人玫瑰，手留余香。
+
+整理不易！点个赞呗！
+
+发布于 2020-05-23 19:44
+Python
+Python教程
+Python 入门
+​赞同 8​
+​2 条评论
+​分享
+​喜欢
+​收藏
+​申请转载
+​
+
+赞同 8
+
+​
+分享
+写下你的评论...
+
+2 条评论
+默认
+最新
+xxx
+xxx
+大佬，怎么读取Text中的内容？
+2022-11-26
+​回复
+​喜欢
+Eason Gao
+Eason Gao
+.get(1.0, 'end')
+
+06-21
+​回复
+​喜欢
+推荐阅读
+【极简Python 自动化办公】Python写入Word文档
+【极简Python 自动化办公】Python写入Word文档
+P小二
+发表于飞蟒Pyt...
+【极简Python自动化办公】Python读取PDF文字和表格
+【极简Python 自动化办公】专栏是介绍如何利用python办公，减少工作负荷。篇幅精炼，内容易懂，无论是否有编程基础，都非常适合。在日常的工作中，处理PDF是最平常不过的事情了。今天带来极…
+
+P小二
+发表于飞蟒Pyt...
+零基础用 Python 画图表，让你的论文更美观
+零基础用 Python 画图表，让你的论文更美观
+少数派
+发表于少数派
+Python 模块导入
+写下这篇博客是因为我经常被 python module 的导入路径所困扰。我们写下一个 python 工程，当工程有多个层级时，会发生以下两个问题，大家可以看看自己能不能回答上来： 每当我想运行一个 .…
+
+marioZYN
+
+
+选择语言
+登录即可查看 超5亿 专业优质内容
+超 5 千万创作者的优质提问、专业回答、深度文章和精彩视频尽在知乎。
+立即登录/注册
